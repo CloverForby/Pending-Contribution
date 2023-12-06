@@ -20,21 +20,20 @@ $myArrays = array(
 		'params' => array(
 			'title' => 'Pending Contribution Fields',
 			'name' => 'pendingContributionFields',
-			//'extends_entity_column_value' => '1773',
 			'extends_entity_column_value:name' => 'pendingContributionActivity',
 			'extends' => 'Activity',
 			'style' => 'Inline',
 			'is_active' => TRUE,
 		),
 	),
-	//CUSTOM FIELD: AMMOUNT
+	//CUSTOM FIELD: AMOUNT
 	'pccfTotalAmt' => array(
 		'name' => "pccfTotalAmt",
 		'entity' => "CustomField",
 		'params' => array(
 			'custom_group_id:name' => 'pendingContributionFields',
 			'name' => 'pccfTotalAmt',
-			'label' => 'Total Ammount',
+			'label' => 'Total Amount',
 			'html_type' => 'Text',
 			'data_type' => 'Money',
 			'is_searchable' => TRUE,
@@ -51,6 +50,7 @@ $myArrays = array(
 			'label' => 'Recieve Date',
 			'html_type' => 'Select Date',
 			'data_type' => 'Date',
+			'time_format' => 1,
 			'is_searchable' => TRUE,
 		),
 	),
@@ -67,6 +67,7 @@ $myArrays = array(
 			'is_searchable' => TRUE,
 		),
 	),
+	
 	//CUSTOM FIELD: PAYMENT INSTRUMENT (SELECT)
 	'pccfPayInst' => array(
 		'name' => "pccfPayInst",
@@ -74,8 +75,9 @@ $myArrays = array(
 		'params' => array( 
 			'custom_group_id:name' => 'pendingContributionFields',
 			'option_group_id.name' => 'payment_instrument',
+			//'option_group_id.name' => 'pendingcont_paymentInst',
 			'name' => 'pccfPayInst',
-			'label' => 'Payment Instrument',
+			'label' => 'Payment Method',
 			'html_type' => 'Select',
 			'data_type' => 'Int',
 			'is_searchable' => TRUE,

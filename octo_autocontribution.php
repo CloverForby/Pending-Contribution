@@ -176,6 +176,7 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 			Civi::log()->debug("FinancialType not found.");
 		}
 	}
+	//if financial type was updated
 	if(!$isAlreadyUpdating && $objectName == 'FinancialType'){
 		$isAlreadyUpdating = true;
 		if ($op = 'update'){
