@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<extension key="octo_autocontribution" type="module">
+  <file>octo_autocontribution</file>
+  <name>Auto Contribution</name>
+  <description>[READ README.MD FILE IN THE EXTENSION'S FILES ON HOW TO  USE] An extension that creates "Pending Contribution" activity type, which when an activity with that type status is changed to complete will create a new contribution.</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Melissa</author>
+    <email>melissa@octopus8.com / nadiya.m.madden@gmail.com</email>
+  </maintainer>
+  <releaseDate>2023-11-09</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>5.66</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <classloader>
+    <psr0 prefix="CRM_" path="."/>
+    <psr4 prefix="Civi\" path="Civi"/>
+  </classloader>
+  <civix>
+    <namespace>CRM/OctoAutocontribution</namespace>
+    <format>23.02.1</format>
+    <angularModule>crmOctoAutocontribution</angularModule>
+  </civix>
+  <mixins>
+    <mixin>mgd-php@1.0.0</mixin>
+    <mixin>setting-php@1.0.0</mixin>
+    <mixin>smarty-v2@1.0.1</mixin>
+  </mixins>
+  <requires>
+	<ext>civi_contribute</ext>
+  </requires>
+</extension>
