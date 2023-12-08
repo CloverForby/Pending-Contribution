@@ -4,7 +4,7 @@ require_once 'octo_autocontribution.civix.php';
 // phpcs:disable
 use CRM_OctoAutocontribution_ExtensionUtil as E;
 
-function checkIfExists(string $entityName, string $entityType) : bool{
+function autocon_checkIfExists(string $entityName, string $entityType) : bool{
 	$result = civicrm_api4(strval($entityType), 'get', [
 		  'where' => [
 			['name', '=', strval($entityName)],
@@ -19,11 +19,11 @@ function checkIfExists(string $entityName, string $entityType) : bool{
 	};
 }
 
-function createEntity(string $entityType, array $entityValues){
+function autocon_createEntity(string $entityType, array $entityValues){
 	civicrm_api4(strval($entityType), 'create', ['values' => $entityValues]);
 }
 
-function deleteEntity(string $entityName, string $entityType){
+function autocon_deleteEntity(string $entityName, string $entityType){
 	civicrm_api4(strval($entityType), 'delete', [
 		  'where' => [
 			['name', '=', strval($entityName)],
@@ -33,7 +33,7 @@ function deleteEntity(string $entityName, string $entityType){
 }
 //TODO: check newly created activity and return value INT for id
 
-function getActivityID() : string{
+function autocon_getActivityID() : string{
 	$optionValues = civicrm_api4('OptionValue', 'get', [
 	  'select' => [
 		'value',
@@ -45,7 +45,7 @@ function getActivityID() : string{
 	return  $optionValues[0]["value"];
 }
 
-function getCompletedID() : string{
+function autocon_getCompletedID() : string{
 	$optionValues = civicrm_api4('OptionValue', 'get', [
 	  'select' => [
 		'value',
@@ -58,7 +58,7 @@ function getCompletedID() : string{
 	return  $optionValues[0]["value"];
 }
 
-function getPaymentMethod() : string{
+function autocon_getPaymentMethod() : string{
 	$optionGroups = civicrm_api4('OptionGroup', 'get', [
 	  'where' => [
 		['name', '=', 'payment_instrument'],

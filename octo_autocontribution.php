@@ -7,8 +7,8 @@ use CRM_OctoAutocontribution_ExtensionUtil as E;
 // phpcs:enable
 
 //big array, stores all entitys that need to be created (activity type, custom field, etc) for cleanliness
-global $params;
-$params = $myArrays;
+global $autocon_arrays;
+$autocon_arrays = $myArrays;
 
 /**
  * Implements hook_civicrm_config().
@@ -35,30 +35,30 @@ function octo_autocontribution_civicrm_install(): void {
  */
 
 function octo_autocontribution_civicrm_disable(): void {
-	global $params;
+	global $autocon_arrays;
 	//goes through entire array
-	foreach ($params as $entity){
+	foreach ($autocon_arrays as $entity){
 		//checks if entity exists
-		$check = checkIfExists($entity['name'], $entity['entity']);
+		$check = autocon_checkIfExists($entity['name'], $entity['entity']);
 		if ($check){
 			//if exists, deletes entity
-			deleteEntity($entity['name'], $entity['entity']);
+			autocon_deleteEntity($entity['name'], $entity['entity']);
 		}
 	}
 }
 
 function octo_autocontribution_civicrm_enable(): void {
-	global $params;
+	global $autocon_arrays;
 	//goes through entire array
-	foreach($params as $entity){
+	foreach($autocon_arrays as $entity){
 		//check if entity exists
-		$check = checkIfExists($entity['name'], $entity['entity']);
+		$check = autocon_checkIfExists($entity['name'], $entity['entity']);
 		if ($check){
 			//if it exists
 			echo 'What? It already exists???!';
 		} else {
 			//if it doesn't exist, the entity is created
-			createEntity($entity['entity'], $entity['params']);
+			autocon_createEntity($entity['entity'], $entity['params']);
 		}
 	}
 	//get financial types
@@ -87,8 +87,8 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 		$activityType = $objectRef->activity_type_id;
 		$status = $objectRef->status_id;
 		//get "pending contribution" activity ID
-		$getActivityType = getActivityID();
-		$getCompleteID = getCompletedID();
+		$getActivityType = autocon_getActivityID();
+		$getCompleteID = autocon_getCompletedID();
 		//check if activity type is "Pending Contribution"'s and the activity status was updated to 2 (ID of completed)
 		if ($activityType == $getActivityType && $status == $getCompleteID){
 			//get contact_id of Activity type (for some reason doesn't list them in the actual activity, but rather in ActivityContact table)
@@ -131,7 +131,7 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 				'financial_type_id' => $financialType,
 			);
 			//finally, creates a new contribution using the array established above
-			createEntity('Contribution', $newContArrays);
+			autocon_createEntity('Contribution', $newContArrays);
 		}
 		$isAlreadyUpdating = false;
 	}
