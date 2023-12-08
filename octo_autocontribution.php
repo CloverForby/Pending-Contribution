@@ -67,10 +67,10 @@ function octo_autocontribution_civicrm_enable(): void {
 		$results = civicrm_api4('OptionValue', 'create', [
 		  'values' => [
 			'option_group_id.name' => 'pendingcont_financialtype',
-			'label' => print_r($type['name'], true),
-			'value' => print_r($type['id'], true),
-			'name' => 'finType :: ' . print_r($type['name'], true),
-			'is_active' => TRUE,
+			'label' => $type['name'],
+			'value' => $type['id'],
+			'name' => 'finType :: ' . $type['name'],
+			'is_active' => $type['is_active'],
 		  ],
 		]);
 	}
@@ -78,20 +78,14 @@ function octo_autocontribution_civicrm_enable(): void {
 
 //this function occurs when after a change to the db has been commited (more info: https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postCommit/)
 function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &$objectRef): void{
-	//will go through an infinite loop without this vv idk what it does
-	static $isAlreadyUpdating = false;
-	//check if the object being interacted with is called an "Activity" and the operation is edit
-	if (!$isAlreadyUpdating && $objectName == 'Activity' && $op == 'edit'){
-		$isAlreadyUpdating = true;
-		//get the activity_type_id and status of the activity type
+	if ($objectName == 'Activity' && $op == 'edit'){
+		
 		$activityType = $objectRef->activity_type_id;
 		$status = $objectRef->status_id;
-		//get "pending contribution" activity ID
 		$getActivityType = autocon_getActivityID();
 		$getCompleteID = autocon_getCompletedID();
-		//check if activity type is "Pending Contribution"'s and the activity status was updated to 2 (ID of completed)
+		
 		if ($activityType == $getActivityType && $status == $getCompleteID){
-			//get contact_id of Activity type (for some reason doesn't list them in the actual activity, but rather in ActivityContact table)
 			$getContact = civicrm_api4('ActivityContact', 'get', [
 			  'where' => [
 				['activity_id', '=', $objectId],
@@ -99,14 +93,9 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 			  ],
 			]);
 			$contactID = $getContact[0]['contact_id'];
-			//Get custom fields of Pending Contribution
 			$getFields = civicrm_api4('Activity', 'get', [
 			  'select' => [
-				'pendingContributionFields.pccfTotalAmt',
-				'pendingContributionFields.pccfPayInst',
-				'pendingContributionFields.pccfSource',
-				'pendingContributionFields.pccfrecieveDate',
-				'pendingContributionFields.pccfFinType',
+				'pendingContributionFields.pccfTotalAmt','pendingContributionFields.pccfPayInst','pendingContributionFields.pccfSource','pendingContributionFields.pccfrecieveDate','pendingContributionFields.pccfFinType',
 			  ],
 			  'where' => [
 				['activity_type_id', '=', $getActivityType],
@@ -114,26 +103,19 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 			  ],
 			]);
 			// Stores each field in variables
-			$totalamnt = $getFields[0]['pendingContributionFields.pccfTotalAmt'];
-			$payInst = $getFields[0]['pendingContributionFields.pccfPayInst'];
-			$source = $getFields[0]['pendingContributionFields.pccfSource'];
-			$recieveDate = $getFields[0]['pendingContributionFields.pccfrecieveDate'];
-			$financialType = $getFields[0]['pendingContributionFields.pccfFinType'];
 			 //Create new array for the new contribution's parameters
 			$newContArrays = array(
 				'contact_id' => $contactID,
-				'total_amount' => $totalamnt,
+				'total_amount' => $getFields[0]['pendingContributionFields.pccfTotalAmt'],
 				'currency:name' => 'SGD', 
-				'payment_instrument_id' => $payInst,
-				'receive_date' => $recieveDate,
-				'source' => $source,
+				'payment_instrument_id' => $getFields[0]['pendingContributionFields.pccfPayInst'],
+				'receive_date' => $getFields[0]['pendingContributionFields.pccfrecieveDate'],
+				'source' =>  $getFields[0]['pendingContributionFields.pccfSource'],
 				'contribution_status_id' => 1,
-				'financial_type_id' => $financialType,
+				'financial_type_id' => $getFields[0]['pendingContributionFields.pccfFinType'],
 			);
-			//finally, creates a new contribution using the array established above
 			autocon_createEntity('Contribution', $newContArrays);
 		}
-		$isAlreadyUpdating = false;
 	}
 	//if financial type was added
 	if($objectName == 'FinancialType' && $op == 'create'){
@@ -145,11 +127,10 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 		$results = civicrm_api4('OptionValue', 'create', [
 		  'values' => [
 			'option_group_id.name' => 'pendingcont_financialtype',
-			'label' => print_r($financialType[0]['name'], true),
-			'value' => print_r($financialType[0]['id'], true),
-			'is_active' => print_r($financialType[0]['is_active'], true),
-			'name' => 'finType :: ' . print_r($financialType[0]['name'], true),
-			'is_active' => TRUE,
+			'label' => $financialType[0]['name'],
+			'value' => $financialType[0]['id'],
+			'is_active' => $financialType[0]['is_active'],
+			'name' => 'finType :: ' . $financialType[0]['name'],
 		  ],
 		]);
 	}
@@ -177,8 +158,7 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 		}
 	}
 	//if financial type was updated
-	if(!$isAlreadyUpdating && $objectName == 'FinancialType'){
-		$isAlreadyUpdating = true;
+	if($objectName == 'FinancialType'){
 		if ($op = 'update'){
 			$results = civicrm_api4('OptionValue', 'update', [
 					'values' => [
@@ -190,8 +170,6 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 						['value', '=', $objectId],
 					],
 				]);
-			$isAlreadyUpdating = false;
 		}
-		$isAlreadyUpdating = false;
 	}
 }
