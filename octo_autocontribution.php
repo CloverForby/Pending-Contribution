@@ -82,6 +82,7 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 		
 		$activityType = $objectRef->activity_type_id;
 		$status = $objectRef->status_id;
+		$recieveDate = $objectRef->created_date;
 		$getActivityType = autocon_getActivityID();
 		$getCompleteID = autocon_getCompletedID();
 		
@@ -95,7 +96,7 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 			$contactID = $getContact[0]['contact_id'];
 			$getFields = civicrm_api4('Activity', 'get', [
 			  'select' => [
-				'pendingContributionFields.pccfTotalAmt','pendingContributionFields.pccfPayInst','pendingContributionFields.pccfSource','pendingContributionFields.pccfrecieveDate','pendingContributionFields.pccfFinType',
+				'pendingContributionFields.pccfTotalAmt','pendingContributionFields.pccfPayInst','pendingContributionFields.pccfSource','pendingContributionFields.pccfFinType',
 			  ],
 			  'where' => [
 				['activity_type_id', '=', $getActivityType],
@@ -109,7 +110,7 @@ function octo_autocontribution_civicrm_postCommit($op, $objectName, $objectId, &
 				'total_amount' => $getFields[0]['pendingContributionFields.pccfTotalAmt'],
 				'currency:name' => 'SGD', 
 				'payment_instrument_id' => $getFields[0]['pendingContributionFields.pccfPayInst'],
-				'receive_date' => $getFields[0]['pendingContributionFields.pccfrecieveDate'],
+				'recieve_date' => $recieveDate,
 				'source' =>  $getFields[0]['pendingContributionFields.pccfSource'],
 				'contribution_status_id' => 1,
 				'financial_type_id' => $getFields[0]['pendingContributionFields.pccfFinType'],

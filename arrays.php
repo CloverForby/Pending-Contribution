@@ -40,20 +40,6 @@ $myArrays = array(
 			'is_required' => TRUE,
 		),
 	),
-	//CUSTOM FIELD: DATE 
-	'pccfrecieveDate' => array(
-		'name' => "pccfrecieveDate",
-		'entity' => "CustomField",
-		'params' => array(
-			'custom_group_id:name' => 'pendingContributionFields',
-			'name' => 'pccfrecieveDate',
-			'label' => 'Recieve Date',
-			'html_type' => 'Select Date',
-			'data_type' => 'Date',
-			'time_format' => 1,
-			'is_searchable' => TRUE,
-		),
-	),
 	//CUSTOM FIELD : SOURCE
 	'pccfSource' => array(
 		'name' => "pccfSource",
